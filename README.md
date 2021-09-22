@@ -19,3 +19,10 @@ First_Web_Scraping_project
 ## Step 3:
 + You just copy file setting.py and /spider/amazon.py 
 + scrapy crawl amazon -o test.csv
+
+----
+# Task i will do in the future:
++ Crawl next page
++ multi process for scrapy
++ create file input_node_id, I just put node_id in amazon and crawl essential information which I need.
++ Fake ip through proxy, and increase concurrency_requeset.
