@@ -44,4 +44,6 @@ First_Web_Scraping_project
 
 4. Have a small number of category, so page will display relation but product in relation not belong to this node_id.
 
+    ex : https://www.amazon.com/b?node=10342351011
+
 5. First page show have n page , but can't push the button next.
