@@ -1,7 +1,7 @@
 import scrapy
 
-queries = [10342349011]
-queries_1 = ['tshirt for men', 'tshirt for women']
+queries = [10342348011,10342349011,10342351011]
+#queries_1 = ['tshirt for men', 'tshirt for women']
 
 
 class AmazonSpider(scrapy.Spider):
@@ -10,38 +10,29 @@ class AmazonSpider(scrapy.Spider):
     start_urls = ['http://www.amazon.com']
     def start_requests(self):
         for query in queries:
-            url = "https://www.amazon.com/b?node=1069738"
+            url = "https://www.amazon.com/b?node={}".format(query)
             print(url)
-            yield scrapy.Request(url=url, callback=self.parse_keyword_response)
+            yield scrapy.Request(url=url, callback=self.parse_product_page)
 
 
-    def parse_keyword_response(self, response):
-        products = response.xpath('//*[@data-asin]')
-
-        for product in products:
-            asin = product.xpath('@data-asin').extract_first()
-            product_url = f"https://www.amazon.com/dp/{asin}"
-            yield scrapy.Request(url=product_url, callback=self.parse_product_page, meta={'asin': asin})
-    
-        # next_page = response.xpath('//li[@class="a-last"]/a/@href').extract_first()
-        # if next_page:
-        #     url = urljoin("https://www.amazon.com",next_page)
-        #     yield scrapy.Request(url=product_url, callback=self.parse_keyword_response)
 
     def parse_product_page(self, response):
-        asin = response.meta['asin']
-        title = response.xpath('//*[@id="productTitle"]/text()').extract_first()
-        #image = re.search('"large":"(.*?)"',response.text).groups()[0]
-        rating = response.xpath('//*[@id="acrPopover"]/@title').extract_first()
-        number_of_reviews = response.xpath('//*[@id="acrCustomerReviewText"]/text()').extract_first()
-        bullet_points = response.xpath('//*[@id="feature-bullets"]//li/span/text()').extract()
-        seller_rank = response.xpath('//*[text()="Amazon Best Sellers Rank:"]/parent::*//text()[not(parent::style)]').extract()
 
-        price = response.xpath('//*[@id="priceblock_ourprice"]/text()').extract_first()
+        node_id = response.xpath('//option[@selected= "selected" and @current]/@value').extract()
+        node_id = node_id[0].replace("node=","")
 
-        if not price:
-            price = response.xpath('//*[@data-asin-price]/@data-asin-price').extract_first() or \
-                    response.xpath('//*[@id="price_inside_buybox"]/text()').extract_first()
+        for products in response.xpath('//div[@data-asin and @data-uuid]'):
+            product_sku = products.attrib['data-asin']
+            xpath_of_product_name = '//div[@data-asin = "{}"]//span[@class = "a-size-base-plus a-color-base a-text-normal"]/text()'.format(product_sku)
+            product_name = response.xpath(xpath_of_product_name).extract()
+            
+            yield {
+                "product_name" : product_name,
+                "node_id" : node_id,
+                "product_sku" : product_sku,
+            }
 
-        yield {'asin': asin, 'Title': title,'Rating': rating, 'NumberOfReviews': number_of_reviews,
-               'Price': price,}
+        next_page = response.xpath('//li[@class = "a-last"]/a/@href').extract_first()
+        next_page = "https://www.amazon.com{}".format(next_page)
+        if next_page is not None:
+            yield response.follow(next_page,callback = self.parse_product_page)
