@@ -1,6 +1,7 @@
 import scrapy
 
 queries = [10342348011,10342349011,10342351011]
+check_queries = [13764241, 13299331]
 #queries_1 = ['tshirt for men', 'tshirt for women']
 
 
@@ -9,7 +10,7 @@ class AmazonSpider(scrapy.Spider):
     allowed_domains = ['amazon.com']
     start_urls = ['http://www.amazon.com']
     def start_requests(self):
-        for query in queries:
+        for query in check_queries:
             url = "https://www.amazon.com/b?node={}".format(query)
             print(url)
             yield scrapy.Request(url=url, callback=self.parse_product_page)
@@ -23,7 +24,8 @@ class AmazonSpider(scrapy.Spider):
 
         for products in response.xpath('//div[@data-asin and @data-uuid]'):
             product_sku = products.attrib['data-asin']
-            xpath_of_product_name = '//div[@data-asin = "{}"]//span[@class = "a-size-base-plus a-color-base a-text-normal"]/text()'.format(product_sku)
+            xpath_of_product_name = '//div[@data-asin = "{}"]//span[contains(@class , "a-color-base a-text-normal")]/text()'.format(product_sku)
+            #xpath_of_product_name = '//div[@data-asin = "{}"]//span[@class = "a-size-base-plus a-color-base a-text-normal"]/text()'.format(product_sku)
             product_name = response.xpath(xpath_of_product_name).extract()
             
             yield {
