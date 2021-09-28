@@ -19,6 +19,7 @@ First_Web_Scraping_project
 ## Step 3:
 + You just copy file setting.py and /spider/amazon.py 
 + scrapy crawl amazon -o test.csv
++ scrapy crawl amazon -o test.json (highly recommend using json)
 
 ----
 # Task i will do in the future:
