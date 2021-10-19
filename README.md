@@ -48,3 +48,9 @@ First_Web_Scraping_project
     ex : https://www.amazon.com/b?node=10342351011
 
 5. First page show have n page , but can't push the button next.
+
+-----
+# Search in amazone
+1.  Searching for a set product that has the same node id: https://www.amazon.com/b?node=10342349011
+2.  Searching one product base on node id and product sku(Stock Keeping Unit): https://www.amazon.com/Speedball-Super-Value-Printing-Starter/dp/B000SKT0US
+    + but in this situation, the product name in url is not the full name, so if you want to search by full name, you must encode the full name with function (urlencode): https://www.amazon.com/Speedball%20Super%20Value%20Block%20Printing%20Starter%20Kit%20%E2%80%93%20Includes%20Ink%2C%20Brayer%2C%20Lino%20Handle%20and%20Cutters%2C%20Speedy-Carve/dp/B000SKT0US
