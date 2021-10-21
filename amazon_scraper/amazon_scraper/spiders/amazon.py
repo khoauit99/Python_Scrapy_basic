@@ -2,6 +2,7 @@ import scrapy
 import pandas as pd 
 import os 
 import urllib.parse
+import random
 
 # queries = [10342348011,10342349011,10342351011]
 # check_queries = [13764241, 13299331]
@@ -19,6 +20,8 @@ full_data = full_data[start_line:end_line]
 li_product_name = full_data["product_name"].tolist()
 li_product_sku = full_data["product_sku"].tolist()
 li_node_id = full_data["node_id"].tolist()
+proxies_list = ["128.199.109.241:8080","113.53.230.195:3128","125.141.200.53:80","125.141.200.14:80","128.199.200.112:138","149.56.123.99:3128","128.199.200.112:80","125.141.200.39:80","134.213.29.202:4444"]
+
 class AmazonSpider(scrapy.Spider):
     name = 'amazon'
     allowed_domains = ['amazon.com']
@@ -31,13 +34,17 @@ class AmazonSpider(scrapy.Spider):
         #     yield scrapy.Request(url=url, callback=self.parse_product_page)
 
         for i in range(len(li_product_name)):
-            self.product_name = urllib.parse.quote(li_product_name[i])
+            proxies = 'http://{}'.format(random.choice(proxies_list))
+            self.product_name = li_product_name[i]
+            #url_encode_product_name = urllib.parse.quote(self.product_name)
             self.product_sku = li_product_sku[i]
             self.node_id = li_node_id[i]
+
 
             url = "https://www.amazon.com/{}/dp/{}".format(self.product_name,self.product_sku)
             print(url)
             yield scrapy.Request(url=url, callback=self.parse_product_page)
+            #request.meta["proxy"] = "http://165.227.186.129:80"    
 
     def parse_product_page(self, response):
 
@@ -61,15 +68,42 @@ class AmazonSpider(scrapy.Spider):
         # if next_page is not None:
         #     yield response.follow(next_page,callback = self.parse_product_page)
 
-        product_description = response.xpath('//div[@data-feature-name = "productDescription" and @data-template-name]//div[@id = "productDescription"]/p/text()').extract_first()
-        try:
-            product_description = product_description.replace("\n", "")
-        except:
-            product_description = product_description
+        # print(response.status)
+
+        # tmp_product_name = self.product_name
+        # tmp_product_sku = self.product_sku
+        # tmp_node_id = self.node_id
+
+        if response.status == 200:
+            print("Trang thai la: {}".format(response.status))
+
+            product_description = response.xpath('//div[@data-feature-name = "productDescription" and @data-template-name]//div[@id = "productDescription"]/p/text()').extract()
+            product_name = response.xpath('//span[@id = "productTitle"]/text()').extract_first()
+            link_product = response.xpath('//link[@rel = "canonical"]/@href').extract_first()
+            try:
+                product_name = product_name.replace("\n","")
+                if product_description[0] == "\n":
+                    product_description = response.xpath('//div[@data-feature-name = "productDescription" and @data-template-name]//div[@id = "productDescription"]/p/span/text()').extract()
+            except:
+                product_description = product_description
+            
+            try:
+                stt = link_product.find("/dp/")+4
+                product_sku = link_product[stt:]
+
+            except:
+                product_sku = None
+                print("ERROR FIND: {}".format(product_name))
+                print(link_product)
+
+        else:
+            product_description = "404"
+            product_name = "404"
+            product_sku = "404"
 
         yield {
-                 "product_name" : self.product_name,
-                 "node_id" : self.node_id,
-                 "product_sku" : self.product_sku,
-                 "product_description" : product_description
+                "product_name" : product_name,
+                #  "node_id" : tmp_product_sku,
+                "product_sku" : product_sku,
+                "product_description" : product_description
              }

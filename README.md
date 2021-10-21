@@ -9,6 +9,11 @@ First_Web_Scraping_project
 + Install scrapy inside venv : pip install scrapy
 ```
 
+## step1 extend:
++ install scrapy proxy pool
++ install scrapy random user agent
++ install scrapy fake user agent (not recommend)
+
 ## Step 2:
 ```
 + Scrapy will construct a web scaping project folder for you, with everything already setup. You just run a comman :
@@ -54,3 +59,10 @@ First_Web_Scraping_project
 1.  Searching for a set product that has the same node id: https://www.amazon.com/b?node=10342349011
 2.  Searching one product base on node id and product sku(Stock Keeping Unit): https://www.amazon.com/Speedball-Super-Value-Printing-Starter/dp/B000SKT0US
     + but in this situation, the product name in url is not the full name, so if you want to search by full name, you must encode the full name with function (urlencode): https://www.amazon.com/Speedball%20Super%20Value%20Block%20Printing%20Starter%20Kit%20%E2%80%93%20Includes%20Ink%2C%20Brayer%2C%20Lino%20Handle%20and%20Cutters%2C%20Speedy-Carve/dp/B000SKT0US
+
+
+----
+# user agent and proxy
+1. Fake ip (using proxy) : https://github.com/rejoiceinhope/scrapy-proxy-pool
+2. Fake user agent : https://github.com/alecxe/scrapy-fake-useragent
+3. Pick random one user agent per request: https://pypi.org/project/scrapy-random-useragent/
