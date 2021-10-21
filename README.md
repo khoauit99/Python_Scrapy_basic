@@ -10,7 +10,7 @@ First_Web_Scraping_project
 ```
 
 ## step1 extend:
-+ install scrapy proxy pool
++ install scrapy proxy pool  (ver 0.1.7)
 + install scrapy random user agent
 + install scrapy fake user agent (not recommend)
 
