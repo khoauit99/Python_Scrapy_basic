@@ -66,3 +66,4 @@ First_Web_Scraping_project
 1. Fake ip (using proxy) : https://github.com/rejoiceinhope/scrapy-proxy-pool
 2. Fake user agent : https://github.com/alecxe/scrapy-fake-useragent
 3. Pick random one user agent per request: https://pypi.org/project/scrapy-random-useragent/
+4. link user agent for linux: https://developers.whatismybrowser.com/useragents/explore/operating_system_name/linux/
